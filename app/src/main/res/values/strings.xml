@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">FitnessTracker</string>
+
+    <string-array name="workout_types">
+        <item>Cardio</item>
+        <item>Indoor Run</item>
+        <item>Outdoor Run</item>
+        <item>Indoor Walk</item>
+        <item>Outdoor Walk</item>
+        <item>Swimming</item>
+        <item>Bicycle Ride</item>
+        <item>Kick Boxing</item>
+    </string-array>
+</resources>
