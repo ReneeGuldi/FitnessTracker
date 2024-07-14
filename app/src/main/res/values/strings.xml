@@ -11,4 +11,26 @@
         <item>Bicycle Ride</item>
         <item>Kick Boxing</item>
     </string-array>
+
+    <string-array name="workout_types_values">
+        <item>Cardio</item>
+        <item>Indoor Run</item>
+        <item>Outdoor Run</item>
+        <item>Indoor Walk</item>
+        <item>Outdoor Walk</item>
+        <item>Swimming</item>
+        <item>Bicycle Ride</item>
+        <item>Kick Boxing</item>
+    </string-array>
+
+    <string-array name="default_workout_types">
+        <item>Cardio</item>
+        <item>Indoor Run</item>
+        <item>Outdoor Run</item>
+        <item>Indoor Walk</item>
+        <item>Outdoor Walk</item>
+        <item>Swimming</item>
+        <item>Bicycle Ride</item>
+        <item>Kick Boxing</item>
+    </string-array>
 </resources>

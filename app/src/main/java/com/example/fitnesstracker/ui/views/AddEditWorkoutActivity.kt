@@ -31,30 +31,32 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.Workout
+import com.example.fitnesstracker.viewmodel.AppUiState
+import com.example.fitnesstracker.viewmodel.MainViewModel
 import com.example.fitnesstracker.viewmodel.WorkoutViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+
 class AddEditWorkoutActivity : ComponentActivity() {
     private val workoutViewModel: WorkoutViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
-            AddEditWorkoutScreen(navController, workoutViewModel)
+            AddEditWorkoutScreen(mainViewModel, workoutViewModel)
         }
     }
 }
 
-
 @Composable
-fun AddEditWorkoutScreen(navController: NavController, workoutViewModel: WorkoutViewModel) {
+fun AddEditWorkoutScreen(viewModel: MainViewModel, workoutViewModel: WorkoutViewModel) {
     var date by remember { mutableStateOf(Calendar.getInstance().time) }
     var workoutType by remember { mutableStateOf("") }
     var workoutDuration by remember { mutableStateOf("") }
@@ -70,9 +72,8 @@ fun AddEditWorkoutScreen(navController: NavController, workoutViewModel: Workout
     ) {
         FitnessAppBar(
             title = "Add Workout",
-            onBackClick = { navController.navigate("main") }
+            onBackClick = { viewModel.navigateTo(AppUiState.MAIN_SCREEN) }
         )
-        // menu bar versus input spots
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -145,7 +146,7 @@ fun AddEditWorkoutScreen(navController: NavController, workoutViewModel: Workout
                             notes = if (workoutNotes.isNotBlank()) workoutNotes else null
                         )
                         workoutViewModel.insert(workout)
-                        navController.navigate("main")
+                        viewModel.navigateTo(AppUiState.MAIN_SCREEN)
                     },
                     modifier = Modifier.align(Alignment.End)
                 ) {
@@ -154,7 +155,6 @@ fun AddEditWorkoutScreen(navController: NavController, workoutViewModel: Workout
             }
         }
     }
-
 }
 
 @Composable
@@ -225,5 +225,4 @@ fun DateInput(
             }
     )
 }
-
 

@@ -2,6 +2,8 @@ package com.example.fitnesstracker.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.fitnesstracker.app.FitnessApp
 import com.example.fitnesstracker.data.Workout
@@ -10,12 +12,16 @@ import kotlinx.coroutines.launch
 
 class WorkoutViewModel(application: Application) : AndroidViewModel(application) {
     private var repository: WorkoutRepository? = null
+    var allWorkouts: LiveData<List<Workout>>? = null
 
 
     init {
         if (application is FitnessApp) {
             val workoutDao = application.database.workoutDao()
-            repository = WorkoutRepository(workoutDao)
+            repository = WorkoutRepository(workoutDao, application)
+            allWorkouts = repository?.getAllWorkOuts()
+        } else {
+            allWorkouts = MutableLiveData(emptyList<Workout>())
         }
     }
 
