@@ -65,11 +65,7 @@ fun AddEditWorkoutScreen(viewModel: MainViewModel, workoutViewModel: WorkoutView
 
     val workoutTypes = stringArrayResource(R.array.workout_types)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
+    Column {
         FitnessAppBar(
             title = "Add Workout",
             onBackClick = { viewModel.navigateTo(AppUiState.MAIN_SCREEN) }
