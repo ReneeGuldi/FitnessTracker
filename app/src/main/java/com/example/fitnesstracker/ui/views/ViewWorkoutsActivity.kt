@@ -5,12 +5,17 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -55,7 +60,8 @@ fun WorkoutHistoryScreen(mainViewModel: MainViewModel, workoutViewModel: Workout
             title = "View Workouts",
             onBackClick = {
                 mainViewModel.navigateTo(AppUiState.MAIN_SCREEN)
-            }
+            },
+            onHelpClick = { mainViewModel.navigateTo(AppUiState.HELP) }
         )
         Column(
             modifier = Modifier
@@ -65,14 +71,28 @@ fun WorkoutHistoryScreen(mainViewModel: MainViewModel, workoutViewModel: Workout
             Text(text = "Workout History", style = MaterialTheme.typography.headlineMedium)
             LazyColumn {
                 items(workoutsState.value) { workout ->
-                    WorkoutRow(workout)
+                    WorkoutRow(
+                        workout,
+                        onEditClick = { selectedWorkout ->
+                            mainViewModel.setSelectedWorkout(selectedWorkout)
+                            mainViewModel.navigateTo(AppUiState.EDIT_WORKOUT)
+                        },
+                        onDeleteClick = { selectedWorkout ->
+                            workoutViewModel.delete(selectedWorkout)
+                        }
+                    )
                 }
             }
         }
     }
 }
+
 @Composable
-fun WorkoutRow(workout: Workout) {
+fun WorkoutRow(
+    workout: Workout,
+    onEditClick: (Workout) -> Unit,
+    onDeleteClick: (Workout) -> Unit
+) {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     Card(
         modifier = Modifier
@@ -81,11 +101,30 @@ fun WorkoutRow(workout: Workout) {
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Date: ${dateFormat.format(workout.date)}")
-            Text(text = "Type: ${workout.workoutType}")
-            Text(text = "Duration: ${workout.duration} minutes")
-            Text(text = "Calories Burned: ${workout.caloriesBurned}")
-            workout.notes?.let { Text(text = "Notes: $it") }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(text = "Date: ${dateFormat.format(workout.date)}")
+                    Text(text = "Type: ${workout.workoutType}")
+                    Text(text = "Duration: ${workout.duration} minutes")
+                    Text(text = "Calories Burned: ${workout.caloriesBurned}")
+                    workout.notes?.let { Text(text = "Notes: $it") }
+                }
+                Row {
+                    Button(onClick = { onEditClick(workout) }) {
+                        Text(text = "Edit")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Button(onClick = { onDeleteClick(workout) }) {
+                        Text(text = "Delete")
+                    }
+                }
+            }
         }
     }
 }
+
+
+
