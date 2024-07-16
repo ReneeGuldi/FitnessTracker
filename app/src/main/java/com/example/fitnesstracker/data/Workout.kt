@@ -7,7 +7,7 @@ import java.util.Date
 
 @Entity(tableName = "workout_table")
 data class Workout(
-    @PrimaryKey(autoGenerate = true) val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val date: Date,
     val workoutType: String,
     val duration: Int,

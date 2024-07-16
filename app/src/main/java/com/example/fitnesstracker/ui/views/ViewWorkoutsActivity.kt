@@ -1,7 +1,6 @@
 package com.example.fitnesstracker.ui.views
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -16,39 +15,22 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.fitnesstracker.data.Workout
 import com.example.fitnesstracker.viewmodel.AppUiState
 import com.example.fitnesstracker.viewmodel.MainViewModel
 import com.example.fitnesstracker.viewmodel.WorkoutViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
-
-class ViewWorkoutsActivity : ComponentActivity() {
-    private val mainViewModel: MainViewModel by viewModels()
-    private val workoutViewModel: WorkoutViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            WorkoutHistoryScreen(
-                mainViewModel,
-                workoutViewModel
-            )
-        }
-    }
-}
-
-
 @Composable
-fun WorkoutHistoryScreen(mainViewModel: MainViewModel, workoutViewModel: WorkoutViewModel) {
-    // Ensure that allWorkouts is not null before observing it
-    val workoutsState = workoutViewModel.allWorkouts.observeAsState(initial = emptyList())
-
-    // Add a log statement to print the workouts
-    Log.d("WorkoutHistoryScreen", "Observed workouts: ${workoutsState.value}")
+fun WorkoutHistoryScreen(mainViewModel: MainViewModel, workoutViewModel: WorkoutViewModel = viewModel()) {
+    val workouts by workoutViewModel.allWorkouts!!.observeAsState(initial = emptyList())
 
     Column {
         FitnessAppBar(
@@ -64,7 +46,7 @@ fun WorkoutHistoryScreen(mainViewModel: MainViewModel, workoutViewModel: Workout
         ) {
             Text(text = "Workout History", style = MaterialTheme.typography.headlineMedium)
             LazyColumn {
-                items(workoutsState.value) { workout ->
+                items(workouts) { workout ->
                     WorkoutRow(workout)
                 }
             }
