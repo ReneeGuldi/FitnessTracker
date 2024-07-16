@@ -23,7 +23,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.fitnesstracker.util.PreferencesManager
-
 import com.example.fitnesstracker.ui.theme.FitnessTrackerTheme
 import com.example.fitnesstracker.viewmodel.AppUiState
 import com.example.fitnesstracker.viewmodel.MainViewModel
@@ -126,7 +125,6 @@ fun TopWorkoutTypesPreference(
     onTopWorkoutTypesChanged: (Set<String>) -> Unit
 ) {
     // Placeholder implementation for the top workout types selection
-    // Replace with your actual UI implementation
     val allWorkoutTypes = listOf("Running", "Cycling", "Swimming", "Weightlifting", "Yoga")
 
     Column {

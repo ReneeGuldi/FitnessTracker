@@ -10,14 +10,19 @@ activityCompose = "1.9.0"
 composeBom = "2024.06.00"
 navigationCompose = "2.7.7"
 roomCommon = "2.6.1"
+roomCompiler = "2.6.1"
 roomKtx = "2.6.1"
 preferenceKtx = "1.2.1"
 runtimeLivedata = "1.6.8"
 datastoreCoreAndroid = "1.1.1"
+adapters = "3.2.0-alpha11"
+symbolProcessingGradlePlugin = "2.0.0-1.0.21"
+uiDesktop = "1.6.8"
 
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -37,8 +42,7 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preferenceKtx" }
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 androidx-datastore-core-android = { group = "androidx.datastore", name = "datastore-core-android", version.ref = "datastoreCoreAndroid" }
-
-
+androidx-adapters = { group = "androidx.databinding", name = "adapters", version.ref = "adapters" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

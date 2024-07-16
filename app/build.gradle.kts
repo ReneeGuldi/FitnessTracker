@@ -1,6 +1,8 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
 }
 
 android {
@@ -60,11 +62,18 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
+
     implementation(libs.androidx.room.common)
     implementation(libs.androidx.room.ktx)
+
+
+
     implementation(libs.androidx.preference.ktx)
     implementation(libs.androidx.runtime.livedata)
+
     implementation(libs.androidx.datastore.core.android)
+    implementation(libs.androidx.adapters)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -74,4 +83,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation("androidx.datastore:datastore-preferences:\${versions.datastore_version}")
+    ksp("androidx.room:room-compiler:2.6.1")
 }

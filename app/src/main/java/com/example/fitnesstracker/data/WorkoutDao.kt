@@ -7,10 +7,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-
 @Dao
 interface WorkoutDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(workout: Workout)
 
     @Update
@@ -19,9 +18,6 @@ interface WorkoutDao {
     @Delete
     suspend fun delete(workout: Workout)
 
-    @Query("SELECT * FROM workout_table ORDER BY date DESC")
-    fun getAllWorkOuts(): LiveData<List<Workout>>
-
-    @Query("SELECT * FROM workout_table ORDER BY date DESC LIMIT 10")
-    fun getRecentWorkouts(): LiveData<List<Workout>>
+    @Query("SELECT * FROM workout_table")
+    fun getAllWorkouts(): LiveData<List<Workout>>
 }
