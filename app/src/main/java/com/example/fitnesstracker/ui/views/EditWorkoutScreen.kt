@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,78 +38,84 @@ fun EditWorkoutScreen(
 
     val workoutTypes = stringArrayResource(R.array.workout_types)
 
-    Column(
-        modifier = Modifier.fillMaxSize()
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+
     ) {
-        FitnessAppBar(
-            title = "Edit Workout",
-            onBackClick = { viewModel.navigateTo(AppUiState.MAIN_SCREEN) },
-            onHelpClick = { viewModel.navigateTo(AppUiState.HELP) }
-        )
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxSize()
         ) {
-            Column {
-                DateInput(
-                    selectedDate = date,
-                    onDateSelected = { selectedDate ->
-                        date = selectedDate
-                    }
-                )
+            FitnessAppBar(
+                title = "Edit Workout",
+                onBackClick = { viewModel.navigateTo(AppUiState.MAIN_SCREEN) },
+                onHelpClick = { viewModel.navigateTo(AppUiState.HELP) }
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    DateInput(
+                        selectedDate = date,
+                        onDateSelected = { selectedDate ->
+                            date = selectedDate
+                        }
+                    )
 
-                WorkoutTypeDropdown(
-                    workoutTypes = workoutTypes,
-                    selectedType = workoutType,
-                    onTypeSelected = { selectedType ->
-                        workoutType = selectedType
-                    }
-                )
+                    WorkoutTypeDropdown(
+                        workoutTypes = workoutTypes,
+                        selectedType = workoutType,
+                        onTypeSelected = { selectedType ->
+                            workoutType = selectedType
+                        }
+                    )
 
-                OutlinedTextField(
-                    value = workoutDuration,
-                    onValueChange = { workoutDuration = it },
-                    label = { Text(text = "Workout Duration (minutes)") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-                OutlinedTextField(
-                    value = caloriesBurned,
-                    onValueChange = { caloriesBurned = it },
-                    label = { Text(text = "Calories Burned") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-            }
-            Column {
-                OutlinedTextField(
-                    value = workoutNotes,
-                    onValueChange = { workoutNotes = it },
-                    label = { Text(text = "Workout Notes") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-                Button(
-                    onClick = {
-                        val updatedWorkout = Workout(
-                            id = workout.id, // Ensure to pass the existing workout ID
-                            date = date,
-                            workoutType = workoutType,
-                            duration = workoutDuration.toIntOrNull() ?: 0,
-                            caloriesBurned = caloriesBurned.toIntOrNull() ?: 0,
-                            notes = if (workoutNotes.isNotBlank()) workoutNotes else null
-                        )
-                        workoutViewModel.update(updatedWorkout)
-                        viewModel.navigateTo(AppUiState.MAIN_SCREEN)
-                    },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text(text = "Save")
+                    OutlinedTextField(
+                        value = workoutDuration,
+                        onValueChange = { workoutDuration = it },
+                        label = { Text(text = "Workout Duration (minutes)") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                    OutlinedTextField(
+                        value = caloriesBurned,
+                        onValueChange = { caloriesBurned = it },
+                        label = { Text(text = "Calories Burned") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                }
+                Column {
+                    OutlinedTextField(
+                        value = workoutNotes,
+                        onValueChange = { workoutNotes = it },
+                        label = { Text(text = "Workout Notes") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                    Button(
+                        onClick = {
+                            val updatedWorkout = Workout(
+                                id = workout.id, // Ensure to pass the existing workout ID
+                                date = date,
+                                workoutType = workoutType,
+                                duration = workoutDuration.toIntOrNull() ?: 0,
+                                caloriesBurned = caloriesBurned.toIntOrNull() ?: 0,
+                                notes = if (workoutNotes.isNotBlank()) workoutNotes else null
+                            )
+                            workoutViewModel.update(updatedWorkout)
+                            viewModel.navigateTo(AppUiState.MAIN_SCREEN)
+                        },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text(text = "Save")
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ package com.example.fitnesstracker.ui.views
 
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +14,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,91 +47,98 @@ fun AddWorkoutScreen(viewModel: MainViewModel, workoutViewModel: WorkoutViewMode
     var caloriesBurned by remember { mutableStateOf("") }
     var workoutNotes by remember { mutableStateOf("") }
 
+
+
     val workoutTypes = stringArrayResource(R.array.workout_types)
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
 
-    Column {
-        FitnessAppBar(
-            title = "Add Workout",
-            onBackClick = { viewModel.navigateTo(AppUiState.MAIN_SCREEN) },
-            onHelpClick = { viewModel.navigateTo(AppUiState.HELP) }
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                DateInput(
-                    selectedDate = date,
-                    onDateSelected = { selectedDate ->
-                        date = selectedDate
+    ) {
+        Column {
+            FitnessAppBar(
+                title = "PeakForm - Add Workout",
+                onBackClick = { viewModel.navigateTo(AppUiState.MAIN_SCREEN) },
+                onHelpClick = { viewModel.navigateTo(AppUiState.HELP) }
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    DateInput(
+                        selectedDate = date,
+                        onDateSelected = { selectedDate ->
+                            date = selectedDate
+                        }
+                    )
+
+                    WorkoutTypeDropdown(
+                        workoutTypes = workoutTypes,
+                        selectedType = workoutType,
+                        onTypeSelected = { selectedType ->
+                            workoutType = selectedType
+                        }
+                    )
+
+                    OutlinedTextField(
+                        value = workoutDuration,
+                        onValueChange = { workoutDuration = it },
+                        label = { Text(text = "Workout Duration (minutes)") },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                    OutlinedTextField(
+                        value = caloriesBurned,
+                        onValueChange = { caloriesBurned = it },
+                        label = { Text(text = "Calories Burned") },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                }
+                Column {
+                    OutlinedTextField(
+                        value = workoutNotes,
+                        onValueChange = { workoutNotes = it },
+                        label = { Text(text = "Workout Notes") },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+                        maxLines = 2,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    )
+                    Button(
+                        onClick = {
+                            val workout = Workout(
+                                id = 0,
+                                date = date,
+                                workoutType = workoutType,
+                                duration = workoutDuration.toIntOrNull() ?: 0,
+                                caloriesBurned = caloriesBurned.toIntOrNull() ?: 0,
+                                notes = if (workoutNotes.isNotBlank()) workoutNotes else null
+                            )
+                            workoutViewModel.insert(workout)
+                            viewModel.navigateTo(AppUiState.MAIN_SCREEN)
+                        },
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        Text(text = "Save")
                     }
-                )
-
-                WorkoutTypeDropdown(
-                    workoutTypes = workoutTypes,
-                    selectedType = workoutType,
-                    onTypeSelected = { selectedType ->
-                        workoutType = selectedType
-                    }
-                )
-
-                OutlinedTextField(
-                    value = workoutDuration,
-                    onValueChange = { workoutDuration = it },
-                    label = { Text(text = "Workout Duration (minutes)") },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-                OutlinedTextField(
-                    value = caloriesBurned,
-                    onValueChange = { caloriesBurned = it },
-                    label = { Text(text = "Calories Burned") },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-            }
-            Column {
-                OutlinedTextField(
-                    value = workoutNotes,
-                    onValueChange = { workoutNotes = it },
-                    label = { Text(text = "Workout Notes" ) },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done
-                    ),
-                    maxLines = 2,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-                Button(
-                    onClick = {
-                        val workout = Workout(
-                            id = 0,
-                            date = date,
-                            workoutType = workoutType,
-                            duration = workoutDuration.toIntOrNull() ?: 0,
-                            caloriesBurned = caloriesBurned.toIntOrNull() ?: 0,
-                            notes = if (workoutNotes.isNotBlank()) workoutNotes else null
-                        )
-                        workoutViewModel.insert(workout)
-                        viewModel.navigateTo(AppUiState.MAIN_SCREEN)
-                    },
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text(text = "Save")
                 }
             }
         }

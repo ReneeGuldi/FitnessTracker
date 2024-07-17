@@ -23,6 +23,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -103,57 +104,63 @@ fun MainFragment(
     workoutViewModel: WorkoutViewModel
 ) {
     val recentWorkouts by workoutViewModel.recentWorkouts.collectAsState(emptyList())
-    Column {
-        FitnessAppBar(
-            title = "Add Workout",
-            onBackClick = { mainViewModel.navigateTo(AppUiState.MAIN_SCREEN) },
-            onHelpClick = { mainViewModel.navigateTo(AppUiState.HELP) }
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            Button(
-                onClick = { mainViewModel.navigateTo(AppUiState.ADD_WORKOUT) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Text(text = "Add Workout")
-            }
-            Button(
-                onClick = { mainViewModel.navigateTo(AppUiState.VIEW_WORKOUTS) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Text(text = "View All Workouts")
-            }
-            Button(
-                onClick = { mainViewModel.navigateTo(AppUiState.USER_PREFERENCES) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-            ) {
-                Text(text = "User Prefs.")
-            }
-            Text(
-                text = "Recent Workouts",
-                modifier = Modifier.padding(vertical = 8.dp),
-                color = Color.Black,
-                style = MaterialTheme.typography.bodyLarge
+
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Column {
+            FitnessAppBar(
+                title = "PeakForm - Home",
+                onBackClick = { mainViewModel.navigateTo(AppUiState.MAIN_SCREEN) },
+                onHelpClick = { mainViewModel.navigateTo(AppUiState.HELP) }
             )
-            RecentWorkoutsColumn(
-                recentWorkouts = recentWorkouts,
-                onEditClick = { selectedWorkout ->
-                    mainViewModel.setSelectedWorkout(selectedWorkout)
-                    mainViewModel.navigateTo(AppUiState.EDIT_WORKOUT)
-                },
-                onDeleteClick = { selectedWorkout ->
-                    workoutViewModel.delete(selectedWorkout)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                Button(
+                    onClick = { mainViewModel.navigateTo(AppUiState.ADD_WORKOUT) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text(text = "Add Workout")
                 }
-            )
+                Button(
+                    onClick = { mainViewModel.navigateTo(AppUiState.VIEW_WORKOUTS) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text(text = "View All Workouts")
+                }
+                Button(
+                    onClick = { mainViewModel.navigateTo(AppUiState.USER_PREFERENCES) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text(text = "User Prefs.")
+                }
+                Text(
+                    text = "Recent Workouts",
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = Color.Black,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                RecentWorkoutsColumn(
+                    recentWorkouts = recentWorkouts,
+                    onEditClick = { selectedWorkout ->
+                        mainViewModel.setSelectedWorkout(selectedWorkout)
+                        mainViewModel.navigateTo(AppUiState.EDIT_WORKOUT)
+                    },
+                    onDeleteClick = { selectedWorkout ->
+                        workoutViewModel.delete(selectedWorkout)
+                    }
+                )
+            }
         }
     }
 }
@@ -240,16 +247,14 @@ fun RecentWorkoutsColumn(
 ) {
     LazyColumn {
         items(recentWorkouts) { workout ->
-            WorkoutCard(workout, onEditClick, onDeleteClick)
+            WorkoutCard(workout)
         }
     }
 }
 
 @Composable
 fun WorkoutCard(
-    workout: Workout,
-    onEditClick: (Workout) -> Unit,
-    onDeleteClick: (Workout) -> Unit
+    workout: Workout
 ) {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     Card(
@@ -268,18 +273,6 @@ fun WorkoutCard(
             Text(text = "Duration: ${workout.duration} mins")
             Text(text = "Calories Burned: ${workout.caloriesBurned}")
             workout.notes?.let { Text(text = "Notes: $it") }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
-            ) {
-                Button(onClick = { onEditClick(workout) }) {
-                    Text(text = "Edit")
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Button(onClick = { onDeleteClick(workout) }) {
-                    Text(text = "Delete")
-                }
-            }
         }
     }
 }
