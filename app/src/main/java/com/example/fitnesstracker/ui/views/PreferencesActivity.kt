@@ -1,4 +1,5 @@
 package com.example.fitnesstracker.ui.views
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +19,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -36,6 +38,7 @@ import com.example.fitnesstracker.ui.theme.FitnessTrackerTheme
 import com.example.fitnesstracker.viewmodel.AppUiState
 import com.example.fitnesstracker.viewmodel.MainViewModel
 import com.example.fitnesstracker.viewmodel.PreferencesViewModel
+import com.example.fitnesstracker.ui.theme.*
 
 class PreferencesActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
@@ -61,47 +64,57 @@ fun PreferencesScreen(
     val topWorkoutTypes by preferencesViewModel.topWorkoutTypes.observeAsState()
     val workoutTypes = stringArrayResource(R.array.workout_types)
 
+    // Apply the theme based on the dark mode setting
+    val isDarkMode = darkModeEnabled ?: false
+    val colors = if (isDarkMode) {
+        DarkColors
+    } else {
+        LightColors
+    }
 
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
+    MaterialTheme(
+        colorScheme = colors
     ) {
-        Column {
-            FitnessAppBar(
-                title = "Preferences",
-                onBackClick = {
-                    mainViewModel.navigateTo(AppUiState.MAIN_SCREEN)
-                },
-                onHelpClick = { mainViewModel.navigateTo(AppUiState.HELP) }
-            )
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                SwitchPreference(
-                    title = "Dark Mode",
-                    checked = darkModeEnabled ?: false,
-                    onCheckedChange = { preferencesViewModel.setDarkModeEnabled(it) }
+        Surface(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column {
+                FitnessAppBar(
+                    title = "Preferences",
+                    onBackClick = {
+                        mainViewModel.navigateTo(AppUiState.MAIN_SCREEN)
+                    },
+                    onHelpClick = { mainViewModel.navigateTo(AppUiState.HELP) }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                SwitchPreference(
-                    title = "Show Kilometers",
-                    checked = kilometersEnabled ?: false,
-                    onCheckedChange = { preferencesViewModel.setKilometersEnabled(it) }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                SwitchPreference(
-                    title = "Show Kilograms",
-                    checked = kilogramsEnabled ?: false,
-                    onCheckedChange = { preferencesViewModel.setKilogramsEnabled(it) }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Top Workout Types (Select up to 3):")
-                TopWorkoutTypesPreference(
-                    allWorkoutTypes = workoutTypes,
-                    topWorkoutTypes = topWorkoutTypes ?: emptySet(),
-                    onTopWorkoutTypesChanged = { preferencesViewModel.setTopWorkoutTypes(it) }
-                )
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SwitchPreference(
+                        title = "Dark Mode",
+                        checked = darkModeEnabled ?: false,
+                        onCheckedChange = { preferencesViewModel.setDarkModeEnabled(it) }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SwitchPreference(
+                        title = "Show Kilometers",
+                        checked = kilometersEnabled ?: false,
+                        onCheckedChange = { preferencesViewModel.setKilometersEnabled(it) }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    SwitchPreference(
+                        title = "Show Kilograms",
+                        checked = kilogramsEnabled ?: false,
+                        onCheckedChange = { preferencesViewModel.setKilogramsEnabled(it) }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("Top Workout Types (Select up to 3):")
+                    TopWorkoutTypesPreference(
+                        allWorkoutTypes = workoutTypes,
+                        topWorkoutTypes = topWorkoutTypes ?: emptySet(),
+                        onTopWorkoutTypesChanged = { preferencesViewModel.setTopWorkoutTypes(it) }
+                    )
+                }
             }
         }
     }

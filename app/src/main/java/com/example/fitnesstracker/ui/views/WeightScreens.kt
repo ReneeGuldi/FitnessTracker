@@ -75,6 +75,7 @@ fun AddWeightEntryScreen(
                             weightViewModel.insert(weightInKg)
                             weight = ""
                         }
+                        viewModel.navigateTo(AppUiState.WEIGHT_SCREEN)
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
