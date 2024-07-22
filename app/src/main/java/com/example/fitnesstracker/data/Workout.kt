@@ -12,6 +12,6 @@ data class Workout(
     val workoutType: String,
     val duration: Int,
     val caloriesBurned: Int,
+    val distance: Float? = null, // Change to Float if needed
     val notes: String? = null
-
 )

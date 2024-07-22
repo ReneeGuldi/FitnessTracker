@@ -5,17 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -35,6 +33,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import com.example.fitnesstracker.app.FitnessApp
 import com.example.fitnesstracker.data.Workout
 import com.example.fitnesstracker.ui.theme.FitnessTrackerTheme
@@ -42,7 +42,10 @@ import com.example.fitnesstracker.util.PreferencesManager
 import com.example.fitnesstracker.viewmodel.AppUiState
 import com.example.fitnesstracker.viewmodel.MainViewModel
 import com.example.fitnesstracker.viewmodel.PreferencesViewModel
+import com.example.fitnesstracker.viewmodel.WeightViewModel
+import com.example.fitnesstracker.viewmodel.WeightViewModelFactory
 import com.example.fitnesstracker.viewmodel.WorkoutViewModel
+import com.example.fitnesstracker.viewmodel.WorkoutViewModelFactory
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -51,29 +54,39 @@ import java.util.Locale
 fun MainScreen(
     mainViewModel: MainViewModel,
     workoutViewModel: WorkoutViewModel,
+    weightViewModel: WeightViewModel,
     preferencesViewModel: PreferencesViewModel
 ) {
     val uiState by mainViewModel.uiState.collectAsState()
     val allWorkouts by workoutViewModel.allWorkouts.observeAsState(emptyList())
     val selectedWorkout by mainViewModel.selectedWorkout.collectAsState()
+    val context = LocalContext.current
+    val preferencesManager = PreferencesManager(context)
 
     when (uiState) {
         AppUiState.MAIN_SCREEN -> {
             if (allWorkouts.isEmpty()) {
                 NoWorkoutsMessage(mainViewModel)
             } else {
-                MainFragment(mainViewModel, workoutViewModel)
+                MainFragment(mainViewModel, workoutViewModel, weightViewModel)
             }
         }
-        AppUiState.ADD_WORKOUT -> AddWorkoutScreen(mainViewModel, workoutViewModel)
+        AppUiState.ADD_WORKOUT -> AddWorkoutScreen(mainViewModel, workoutViewModel, preferencesManager)
         AppUiState.EDIT_WORKOUT -> {
             selectedWorkout?.let {
-                EditWorkoutScreen(mainViewModel, workoutViewModel, it)
+                EditWorkoutScreen(mainViewModel, workoutViewModel, it, preferencesManager)
             }
         }
         AppUiState.VIEW_WORKOUTS -> WorkoutHistoryScreen(mainViewModel, workoutViewModel)
         AppUiState.USER_PREFERENCES -> PreferencesScreen(mainViewModel, preferencesViewModel)
         AppUiState.HELP -> HelpFragment(mainViewModel)
+        AppUiState.WEIGHT_SCREEN -> WeightEntriesScreen(
+            weightViewModel,
+            mainViewModel,
+            onAddWeightEntry = { mainViewModel.navigateTo(AppUiState.ADD_WEIGHT) },
+            preferencesManager
+        )
+        AppUiState.ADD_WEIGHT -> AddWeightEntryScreen(weightViewModel, mainViewModel, preferencesManager)
     }
 }
 
@@ -101,7 +114,8 @@ fun NoWorkoutsMessage(viewModel: MainViewModel) {
 @Composable
 fun MainFragment(
     mainViewModel: MainViewModel,
-    workoutViewModel: WorkoutViewModel
+    workoutViewModel: WorkoutViewModel,
+    weightViewModel: WeightViewModel
 ) {
     val recentWorkouts by workoutViewModel.recentWorkouts.collectAsState(emptyList())
 
@@ -120,6 +134,14 @@ fun MainFragment(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
+                Button(
+                    onClick = { mainViewModel.navigateTo(AppUiState.WEIGHT_SCREEN) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Text(text = "Weight Entries")
+                }
                 Button(
                     onClick = { mainViewModel.navigateTo(AppUiState.ADD_WORKOUT) },
                     modifier = Modifier
@@ -177,7 +199,7 @@ fun FitnessAppBar(
             .padding(16.dp)
     ) {
         IconButton(onClick = onBackClick, modifier = Modifier.align(Alignment.CenterStart)) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+            Icon(Icons.Outlined.Home, contentDescription = "Main Menu", tint = Color.White)
         }
         Text(
             text = title,
@@ -204,7 +226,43 @@ fun HelpFragment(viewModel: MainViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Help Screen")
+        Text(
+            text = "Help Screen",
+            style = MaterialTheme.typography.headlineMedium,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Instructions
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "1. Add Workouts",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Text(
+                text = "To add a workout, go to the Add Workout screen from the main menu. Fill in the details such as date, type of workout, duration, and calories burned. Optionally, you can add notes and distance if applicable. Save the workout to track your exercise activities.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "2. Track Weight",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Text(
+                text = "To track your weight, navigate to the Weight Tracking section from the main menu. You can add your weight records with the date automatically recorded. View your weight history and monitor progress through visual graphs.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Back button
         Button(
             onClick = { viewModel.navigateTo(AppUiState.MAIN_SCREEN) },
             modifier = Modifier.fillMaxWidth()
@@ -224,18 +282,22 @@ fun MainScreenPreview() {
         navigateTo(AppUiState.MAIN_SCREEN)
     }
 
-    val workoutViewModel = WorkoutViewModel(fitnessApp.repository).apply {
-        // No need to do anything here for the preview
-    }
 
     // Initialize PreferencesManager
     val preferencesManager = PreferencesManager(context)
-
-    // Initialize PreferencesViewModel with PreferencesManager
     val preferencesViewModel = PreferencesViewModel(preferencesManager)
 
+    val workoutViewModel = ViewModelProvider(
+        LocalViewModelStoreOwner.current!!,
+        WorkoutViewModelFactory(fitnessApp.workoutRepository)
+    )[WorkoutViewModel::class.java]
+
+    val weightViewModel = ViewModelProvider(
+        LocalViewModelStoreOwner.current!!,
+        WeightViewModelFactory(fitnessApp.weightRepository)
+    )[WeightViewModel::class.java]
     FitnessTrackerTheme {
-        MainScreen(mainViewModel, workoutViewModel, preferencesViewModel)
+        MainScreen(mainViewModel, workoutViewModel, weightViewModel, preferencesViewModel)
     }
 }
 

@@ -2,7 +2,6 @@ package com.example.fitnesstracker.ui.views
 
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +13,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.Workout
+import com.example.fitnesstracker.util.PreferencesManager
 import com.example.fitnesstracker.viewmodel.AppUiState
 import com.example.fitnesstracker.viewmodel.MainViewModel
 import com.example.fitnesstracker.viewmodel.WorkoutViewModel
@@ -40,14 +39,15 @@ import java.util.Date
 import java.util.Locale
 
 @Composable
-fun AddWorkoutScreen(viewModel: MainViewModel, workoutViewModel: WorkoutViewModel) {
+fun AddWorkoutScreen(viewModel: MainViewModel, workoutViewModel: WorkoutViewModel, preferenceManager: PreferencesManager) {
     var date by remember { mutableStateOf(Calendar.getInstance().time) }
     var workoutType by remember { mutableStateOf("") }
     var workoutDuration by remember { mutableStateOf("") }
     var caloriesBurned by remember { mutableStateOf("") }
+    var workoutDistance by remember { mutableStateOf("") }
     var workoutNotes by remember { mutableStateOf("") }
 
-
+    val isKilometers = preferenceManager.isKilometers
 
     val workoutTypes = stringArrayResource(R.array.workout_types)
     Surface(
@@ -95,6 +95,15 @@ fun AddWorkoutScreen(viewModel: MainViewModel, workoutViewModel: WorkoutViewMode
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                     )
+                    DistanceInputField(
+                        workoutDistance = workoutDistance,
+                        onDistanceChange = { newDistance ->
+                            workoutDistance = newDistance
+                            // Handle saving or processing distance here
+                            saveWorkoutDistance(newDistance, isKilometers)
+                        },
+                        isKilometers = isKilometers
+                    )
                     OutlinedTextField(
                         value = caloriesBurned,
                         onValueChange = { caloriesBurned = it },
@@ -130,7 +139,7 @@ fun AddWorkoutScreen(viewModel: MainViewModel, workoutViewModel: WorkoutViewMode
                                 workoutType = workoutType,
                                 duration = workoutDuration.toIntOrNull() ?: 0,
                                 caloriesBurned = caloriesBurned.toIntOrNull() ?: 0,
-                                notes = if (workoutNotes.isNotBlank()) workoutNotes else null
+                                notes = workoutNotes.ifBlank { null }
                             )
                             workoutViewModel.insert(workout)
                             viewModel.navigateTo(AppUiState.MAIN_SCREEN)
@@ -145,6 +154,28 @@ fun AddWorkoutScreen(viewModel: MainViewModel, workoutViewModel: WorkoutViewMode
     }
 }
 
+
+@Composable
+fun DistanceInputField(
+    workoutDistance: String,
+    onDistanceChange: (String) -> Unit,
+    isKilometers: Boolean
+) {
+    val distanceUnit = if (isKilometers) "km" else "miles"
+
+    OutlinedTextField(
+        value = workoutDistance,
+        onValueChange = { newValue -> onDistanceChange(newValue) },
+        label = { Text(text = "Workout Distance ($distanceUnit)") },
+        keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Number,
+            imeAction = ImeAction.Done
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+    )
+}
 
 @Composable
 fun WorkoutTypeDropdown(
@@ -213,5 +244,14 @@ fun DateInput(
                 ).show()
             }
     )
+}
+
+fun saveWorkoutDistance(distance: String, isKilometers: Boolean) {
+    val distanceValue = distance.toFloatOrNull() ?: 0f
+    val convertedDistance = if (isKilometers) {
+        distanceValue // No conversion needed if already in kilometers
+    } else {
+        distanceValue * 0.621371 // Convert km to miles per preferencesManager value
+    }
 }
 

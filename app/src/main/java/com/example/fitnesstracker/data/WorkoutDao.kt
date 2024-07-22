@@ -23,5 +23,6 @@ interface WorkoutDao {
     fun getAllWorkouts(): LiveData<List<Workout>>
 
     @Query("SELECT * FROM workout_table ORDER BY date DESC LIMIT 3")
-    fun getRecentWorkouts(): Flow<List<Workout>>
+    fun getRecentWorkouts():
+            Flow<List<Workout>>
 }

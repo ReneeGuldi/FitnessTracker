@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.unit.dp
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.Workout
+import com.example.fitnesstracker.util.PreferencesManager
 import com.example.fitnesstracker.viewmodel.AppUiState
 import com.example.fitnesstracker.viewmodel.MainViewModel
 import com.example.fitnesstracker.viewmodel.WorkoutViewModel
@@ -28,15 +29,18 @@ import com.example.fitnesstracker.viewmodel.WorkoutViewModel
 fun EditWorkoutScreen(
     viewModel: MainViewModel,
     workoutViewModel: WorkoutViewModel,
-    workout: Workout // Existing workout object to edit
+    workout: Workout, // Existing workout object to edit
+    preferenceManager: PreferencesManager
 ) {
     var date by remember { mutableStateOf(workout.date) }
     var workoutType by remember { mutableStateOf(workout.workoutType) }
     var workoutDuration by remember { mutableStateOf(workout.duration.toString()) }
     var caloriesBurned by remember { mutableStateOf(workout.caloriesBurned.toString()) }
     var workoutNotes by remember { mutableStateOf(workout.notes ?: "") }
+    var workoutDistance by remember { mutableStateOf(workout.distance?.toString() ?: "") }
 
     val workoutTypes = stringArrayResource(R.array.workout_types)
+    val isKilometers = preferenceManager.isKilometers
 
     Surface(
         modifier = Modifier
@@ -81,6 +85,16 @@ fun EditWorkoutScreen(
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                     )
+                    DistanceInputField(
+                        workoutDistance = workoutDistance,
+                        onDistanceChange = { newDistance ->
+                            workoutDistance = newDistance
+                            // Handle saving or processing distance here
+                            saveWorkoutDistance(newDistance, isKilometers)
+                        },
+                        isKilometers = isKilometers
+                    )
+
                     OutlinedTextField(
                         value = caloriesBurned,
                         onValueChange = { caloriesBurned = it },
@@ -107,7 +121,7 @@ fun EditWorkoutScreen(
                                 workoutType = workoutType,
                                 duration = workoutDuration.toIntOrNull() ?: 0,
                                 caloriesBurned = caloriesBurned.toIntOrNull() ?: 0,
-                                notes = if (workoutNotes.isNotBlank()) workoutNotes else null
+                                notes = workoutNotes.ifBlank { null }
                             )
                             workoutViewModel.update(updatedWorkout)
                             viewModel.navigateTo(AppUiState.MAIN_SCREEN)
