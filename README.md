@@ -52,11 +52,6 @@ To install the Fitness Tracker App, follow these steps:
 
 1. Access the Settings menu to adjust your preferences for distance and weight units. Choose between kilometers or miles for distance, and kilograms or pounds for weight.
 
-## Help and Support 🆘
-
-For detailed instructions on using the app, refer to the [Help Screen](#help-screen) within the app or contact our support team at [support@fitnesstrackerapp.com](mailto:support@fitnesstrackerapp.com).
-
-
 ## Contributing 🤝
 
 Contributions are welcome to improve the Fitness Tracker App! If you have suggestions or would like to contribute, please follow these steps:
@@ -66,4 +61,4 @@ Contributions are welcome to improve the Fitness Tracker App! If you have sugges
 3. Commit your changes and push to the branch.
 4. Open a Pull Request to the main repository.
 
-Thank you for using the Fitness Tracker App! 🎉
+Future endeavor would involve adding the application to the google play store.
