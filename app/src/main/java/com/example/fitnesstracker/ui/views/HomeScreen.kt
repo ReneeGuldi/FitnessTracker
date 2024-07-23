@@ -77,7 +77,7 @@ fun MainScreen(
                 EditWorkoutScreen(mainViewModel, workoutViewModel, it, preferencesManager)
             }
         }
-        AppUiState.VIEW_WORKOUTS -> WorkoutHistoryScreen(mainViewModel, workoutViewModel)
+        AppUiState.VIEW_WORKOUTS -> WorkoutHistoryScreen(mainViewModel, workoutViewModel, preferencesManager)
         AppUiState.USER_PREFERENCES -> PreferencesScreen(mainViewModel, preferencesViewModel)
         AppUiState.HELP -> HelpFragment(mainViewModel)
         AppUiState.WEIGHT_SCREEN -> WeightEntriesScreen(

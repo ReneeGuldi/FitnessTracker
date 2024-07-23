@@ -99,7 +99,6 @@ fun AddWorkoutScreen(viewModel: MainViewModel, workoutViewModel: WorkoutViewMode
                         workoutDistance = workoutDistance,
                         onDistanceChange = { newDistance ->
                             workoutDistance = newDistance
-                            // Handle saving or processing distance here
                             saveWorkoutDistance(newDistance, isKilometers)
                         },
                         isKilometers = isKilometers
@@ -139,7 +138,8 @@ fun AddWorkoutScreen(viewModel: MainViewModel, workoutViewModel: WorkoutViewMode
                                 workoutType = workoutType,
                                 duration = workoutDuration.toIntOrNull() ?: 0,
                                 caloriesBurned = caloriesBurned.toIntOrNull() ?: 0,
-                                notes = workoutNotes.ifBlank { null }
+                                notes = workoutNotes.ifBlank { null },
+                                distance = workoutDistance.toFloatOrNull()
                             )
                             workoutViewModel.insert(workout)
                             viewModel.navigateTo(AppUiState.MAIN_SCREEN)

@@ -21,6 +21,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnesstracker.data.Workout
+import com.example.fitnesstracker.util.PreferencesManager
 import com.example.fitnesstracker.viewmodel.AppUiState
 import com.example.fitnesstracker.viewmodel.MainViewModel
 import com.example.fitnesstracker.viewmodel.WorkoutViewModel
@@ -28,9 +29,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @Composable
-fun WorkoutHistoryScreen(mainViewModel: MainViewModel, workoutViewModel: WorkoutViewModel) {
+fun WorkoutHistoryScreen(mainViewModel: MainViewModel, workoutViewModel: WorkoutViewModel, preferencesManager: PreferencesManager) {
     // Ensure that allWorkouts is not null
     val workoutsState = workoutViewModel.allWorkouts.observeAsState(initial = emptyList())
+
 
 
     Surface(
@@ -61,7 +63,8 @@ fun WorkoutHistoryScreen(mainViewModel: MainViewModel, workoutViewModel: Workout
                             },
                             onDeleteClick = { selectedWorkout ->
                                 workoutViewModel.delete(selectedWorkout)
-                            }
+                            },
+                            preferenceManager = preferencesManager
                         )
                     }
                 }
@@ -74,9 +77,14 @@ fun WorkoutHistoryScreen(mainViewModel: MainViewModel, workoutViewModel: Workout
 fun WorkoutRow(
     workout: Workout,
     onEditClick: (Workout) -> Unit,
-    onDeleteClick: (Workout) -> Unit
+    onDeleteClick: (Workout) -> Unit,
+    preferenceManager: PreferencesManager
 ) {
     val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+    val isKilometers = preferenceManager.isKilometers
+    val distanceLabel = if (isKilometers) "Distance (km)" else "Distance (miles)"
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -92,6 +100,7 @@ fun WorkoutRow(
                     Text(text = "Date: ${dateFormat.format(workout.date)}")
                     Text(text = "Type: ${workout.workoutType}")
                     Text(text = "Duration: ${workout.duration} minutes")
+                    Text(text = "$distanceLabel: ${workout.distance}")
                     Text(text = "Calories Burned: ${workout.caloriesBurned}")
                     workout.notes?.let { Text(text = "Notes: $it") }
                 }

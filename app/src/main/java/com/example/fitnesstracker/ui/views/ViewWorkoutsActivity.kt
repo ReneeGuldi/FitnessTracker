@@ -25,6 +25,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.fitnesstracker.data.Workout
+import com.example.fitnesstracker.util.PreferencesManager
 import com.example.fitnesstracker.viewmodel.AppUiState
 import com.example.fitnesstracker.viewmodel.MainViewModel
 import com.example.fitnesstracker.viewmodel.WorkoutViewModel
@@ -34,13 +35,15 @@ import java.util.Locale
 class ViewWorkoutsActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
     private val workoutViewModel: WorkoutViewModel by viewModels()
+    private lateinit var preferenceManager: PreferencesManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             WorkoutHistoryScreen(
                 mainViewModel,
-                workoutViewModel
+                workoutViewModel,
+                preferenceManager
             )
         }
     }

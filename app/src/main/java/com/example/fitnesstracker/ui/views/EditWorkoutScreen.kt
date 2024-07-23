@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -17,6 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.fitnesstracker.R
 import com.example.fitnesstracker.data.Workout
@@ -41,6 +44,7 @@ fun EditWorkoutScreen(
 
     val workoutTypes = stringArrayResource(R.array.workout_types)
     val isKilometers = preferenceManager.isKilometers
+    val distanceLabel = if (isKilometers) "Distance (km)" else "Distance (miles)"
 
     Surface(
         modifier = Modifier
@@ -85,14 +89,17 @@ fun EditWorkoutScreen(
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                     )
-                    DistanceInputField(
-                        workoutDistance = workoutDistance,
-                        onDistanceChange = { newDistance ->
-                            workoutDistance = newDistance
-                            // Handle saving or processing distance here
-                            saveWorkoutDistance(newDistance, isKilometers)
-                        },
-                        isKilometers = isKilometers
+                    OutlinedTextField(
+                        value = workoutDistance,
+                        onValueChange = { workoutDistance = it },
+                        label = { Text(distanceLabel) },
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Number,
+                            imeAction = ImeAction.Done
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
                     )
 
                     OutlinedTextField(
@@ -121,7 +128,8 @@ fun EditWorkoutScreen(
                                 workoutType = workoutType,
                                 duration = workoutDuration.toIntOrNull() ?: 0,
                                 caloriesBurned = caloriesBurned.toIntOrNull() ?: 0,
-                                notes = workoutNotes.ifBlank { null }
+                                notes = workoutNotes.ifBlank { null },
+                                distance = workoutDistance.toFloatOrNull()
                             )
                             workoutViewModel.update(updatedWorkout)
                             viewModel.navigateTo(AppUiState.MAIN_SCREEN)
